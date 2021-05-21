@@ -15,7 +15,7 @@ outPath <- ""
 #  rb <- raster_bathymetry(bathy = paste(etopoPath, "ETOPO1_Ice_g_gmt4.grd", sep = "/"),
 #                          depths = c(50, 300, 500, 1000, 1500, 2000, 4000, 6000, 10000),
 #                          proj.out = "+init=epsg:4326",
-#                          boundary = c(-180.0083, 180.0083, -70, 70),
+#                          boundary = c(-180.0083, 180.0083, -90, 90),
 #                          aggregation.factor = 6
 #  )
 #  
@@ -28,7 +28,7 @@ outPath <- ""
 #  islands <- rgdal::readOGR(paste(NEDPath, "ne_10m_minor_islands/ne_10m_minor_islands.shp", sep = "/"))
 #  world <- rbind(world, islands)
 #  
-#  dd_land <- clip_shapefile(world, c(-180, 180, -70, 70))
+#  dd_land <- clip_shapefile(world, c(-180, 180, -90, 90))
 #  
 #  save(dd_land, file = paste(outPath, "dd_land.rda", sep = "/"), compress = "xz")
 
@@ -39,7 +39,7 @@ outPath <- ""
 #  glaciers <- rbind(glaciers, iceshelves)
 #  glaciers <- rgeos::gBuffer(glaciers, byid = TRUE, width = 0)
 #  
-#  dd_glacier <- clip_shapefile(glaciers, c(-180, 180, -70, 70))
+#  dd_glacier <- clip_shapefile(glaciers, c(-180, 180, -90, 90))
 #  dd_glacier <- rgeos::gBuffer(dd_glacier, byid = FALSE, width = 0.1)
 #  dd_glacier <- rgeos::gBuffer(dd_glacier, byid = FALSE, width = -0.1)
 #  
