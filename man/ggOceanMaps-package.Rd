@@ -16,7 +16,9 @@ can be plotted. The \code{\link{basemap}} function is analogous
 to \code{\link[ggplot2]{ggplot}} function from the \pkg{ggplot2} package. 
 Remember to use \code{data = <<NAMEOFDATASET>>} for additional geometries
 you plot on \code{basemaps} (\code{basemap(60) + geom_point(data = 
-data.frame(lon = 50, tat = 70), aes(x = lon, y = lat))} as an example).
+data.frame(lon = 50, lat = 70), aes(x = lon, y = lat))} as an example). As
+a shortcut, you may also use qmap(data.frame(lon = c(10, 50), lat = c(60, 70))).
+Bathymetry is plotted using the \code{bathymetry} argument.
 }
 \seealso{
 Useful links:
@@ -31,6 +33,7 @@ Useful links:
 
 Other contributors:
 \itemize{
+  \item Yves Reecht (\href{https://orcid.org/0000-0003-3583-1843}{ORCID}) (Institute of Marine Research) [contributor]
   \item Hadley Wickham [contributor]
   \item Simon O'Hanlon [contributor]
   \item Roger Bivand [contributor]

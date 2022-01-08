@@ -27,8 +27,8 @@
                  ".ggOceanMapsenv <- new.env(); ",
                  ".ggOceanMapsenv$datapath <- 'YourCustomPath'}",
                  ". You can use usethis::edit_r_profile() to edit the file.", 
-                 " paste(R.home(), 'library', 'ggOceanMapsLargeData', sep = '/') ",
-                 "would make the folder in your R package location. Might require administrative rights.")
+                 "'~/Documents/ggOceanMapsLargeData'",
+                 "would make it in a writable folder on most operating systems.")
   
     packageStartupMessage(paste(strwrap(msg), collapse= "\n"))
     
@@ -42,10 +42,16 @@
     packageStartupMessage(paste(strwrap(msg), collapse= "\n"))
     
   }
+  
+  # Check and store external dependency versions
+  
+  #.ggOceanMapsenv$versions <- sf::sf_extSoftVersion()
+  #.ggOceanMapsenv$SRS_string <- sf::sf_extSoftVersion()[["GDAL"]] >= "3.0.0" & sf::sf_extSoftVersion()[["PROJ"]] >= "6.0.0"
+  
 }
 
 # Define global variables
-utils::globalVariables(c("rdiff.lon", "rdiff.lat"))
+utils::globalVariables(c("rdiff.lon", "rdiff.lat", "label"))
 
 # "long", "lat", "group", "round.lat", "round.lon", "n.lat.grid", "n.lon.grid", "lat.interval", "lon.interval", "keep.glaciers", "MapType", "proj4.utm", "n.points", "..level..", "abb", "x", "y", "sal", "temp", "xmin", "xmax", "ymin", "ymax", ".", "variable", "ymin", "ymax", "X", "arctic_bathy", "barents_bathy", "barents_currents", "kongsfjord_watermasses", "svalbard_bathy"
 

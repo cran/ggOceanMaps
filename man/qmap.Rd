@@ -10,9 +10,9 @@ qmap(
   y = NULL,
   geom = "point",
   limits = NULL,
+  shapefiles = NULL,
   bathymetry = FALSE,
   glaciers = FALSE,
-  resolution = "low",
   rotate = FALSE,
   legends = TRUE,
   legend.position = "right",
@@ -31,6 +31,7 @@ qmap(
   grid.size = 0.1,
   base_size = 11,
   projection.grid = FALSE,
+  expand.factor = 1.1,
   verbose = FALSE,
   ...
 )
@@ -40,15 +41,20 @@ qmap(
 
 \item{x, y, ...}{Aesthetics passed into each layer. Longitude and latitude columns are automatically recognized using the \code{\link{guess_coordinate_columns}} function.}
 
-\item{geom}{Character argument specifying geom(s) to draw. Defaults to "point". Other \code{geom}s have not been implemented yet.}
+\item{geom}{Character argument specifying geom(s) to draw. Defaults to "point". Other alternatives are "text" and "label". The "text" option can also be triggered by simply mapping a variable to \code{label} (see Examples).}
 
-\item{limits}{Map limits. See the \code{limits} argument in \code{\link{basemap}}. If \code{NULL} the limits are automatically taken from \code{data}}
+\item{limits}{Map limits. One of the following:
+\itemize{
+  \item \strong{numeric vector} of length 4: The first element defines the start longitude, the second element the end longitude (counter-clockwise), the third element the minimum latitude and the fourth element the maximum latitude of the bounding box. The coordinates can be given as decimal degrees or coordinate units for shapefiles used by a projected map. Produces a rectangular map. Latitude limits not given in min-max order are automatically ordered to respect this requirement.
+  \item \strong{single integer} between 30 and 88 or -88 and -30 produces a polar map for the Arctic or Antarctic, respectively.
+}
+Can be omitted if \code{data} or \code{shapefiles} are defined.}
+
+\item{shapefiles}{Either a \link[=shapefile_list]{list containing shapefile information} or a character argument referring to a name of pre-made shapefiles in \code{\link{shapefile_list}}. This name is partially matched. Can be omitted if \code{limits} or \code{data} are defined as decimal degrees.}
 
 \item{bathymetry}{Logical indicating whether bathymetry should be added to the map.}
 
 \item{glaciers}{Logical indicating whether glaciers and ice-sheets should be added to the map.}
-
-\item{resolution}{Not implemented yet.}
 
 \item{rotate}{Logical indicating whether the projected maps should be rotated to point towards the pole relative to mid-longitude limit. Experimental.}
 
@@ -56,7 +62,9 @@ qmap(
 
 \item{legend.position}{The position for ggplot2 legend. See the argument with the same name in \link[ggplot2]{theme}.}
 
-\item{lon.interval, lat.interval}{Numeric value specifying the interval of longitude and latitude grids. \code{NULL} finds reasonable defaults depending on \code{limits}.}
+\item{lon.interval}{Numeric value specifying the interval of longitude and latitude grids. \code{NULL} finds reasonable defaults depending on \code{limits}.}
+
+\item{lat.interval}{Numeric value specifying the interval of longitude and latitude grids. \code{NULL} finds reasonable defaults depending on \code{limits}.}
 
 \item{bathy.style}{Character defining the style for bathymetry contours. Alternatives:
 \itemize{
@@ -66,15 +74,31 @@ qmap(
 \item \code{"contour_grey"} plots gray contour lines.
 }}
 
-\item{land.col, gla.col, grid.col}{Character code specifying the color of land, glaciers and grid lines, respectively. Use \code{NA} to remove the grid lines.}
+\item{bathy.border.col}{Character code specifying the color of the border line for land, glacier, and bathymetry shapes.}
 
-\item{land.border.col, gla.border.col, bathy.border.col}{Character code specifying the color of the border line for land, glacier, and bathymetry shapes.}
+\item{bathy.size}{Numeric value specifying the width of the border line land, glacier and bathymetry shapes as well as the grid lines, respectively. Use the \code{\link{LS}} function for a specific width in pt. See Details.}
 
-\item{land.size, gla.size, bathy.size, grid.size}{Numeric value specifying the width of the border line land, glacier and bathymetry shapes as well as the grid lines, respectively. Use the \code{\link{LS}} function for a specific width in pt. See Details.}
+\item{land.col}{Character code specifying the color of land, glaciers and grid lines, respectively. Use \code{NA} to remove the grid lines.}
+
+\item{land.border.col}{Character code specifying the color of the border line for land, glacier, and bathymetry shapes.}
+
+\item{land.size}{Numeric value specifying the width of the border line land, glacier and bathymetry shapes as well as the grid lines, respectively. Use the \code{\link{LS}} function for a specific width in pt. See Details.}
+
+\item{gla.col}{Character code specifying the color of land, glaciers and grid lines, respectively. Use \code{NA} to remove the grid lines.}
+
+\item{gla.border.col}{Character code specifying the color of the border line for land, glacier, and bathymetry shapes.}
+
+\item{gla.size}{Numeric value specifying the width of the border line land, glacier and bathymetry shapes as well as the grid lines, respectively. Use the \code{\link{LS}} function for a specific width in pt. See Details.}
+
+\item{grid.col}{Character code specifying the color of land, glaciers and grid lines, respectively. Use \code{NA} to remove the grid lines.}
+
+\item{grid.size}{Numeric value specifying the width of the border line land, glacier and bathymetry shapes as well as the grid lines, respectively. Use the \code{\link{LS}} function for a specific width in pt. See Details.}
 
 \item{base_size}{Base size parameter for ggplot. See \link[ggplot2]{ggtheme}.}
 
 \item{projection.grid}{Logical indicating whether the coordinate grid should show projected coordinates instead of decimal degree values. Useful to define limits for large maps in polar regions.}
+
+\item{expand.factor}{Expansion factor for map limits with the \code{data} argument. Can be used to zoom in and out automatically limited maps. Defaults to 1.1. Set to \code{NULL} to ignore.}
 
 \item{verbose}{Logical indicating whether information about the projection and guessed column names should be returned as message. Set to \code{FALSE} to make the function silent.}
 }
@@ -93,14 +117,22 @@ dt <- data.frame(lon = c(-100, -80, -60), lat = c(10, 25, 40), var = c("a", "a",
 if(requireNamespace("ggOceanMapsData")) {
 qmap(dt, color = I("red")) 
 }
+
 # Map color
 \donttest{
 qmap(dt, color = var) 
 }
 
-dt <- data.frame(lon = c(-80, -80, -50, -50), lat = c(65, 80, 80, 65))
+# Map text
+\donttest{
+qmap(dt, label = var) 
+} 
 
-if(requireNamespace("ggOceanMapsData")) {
+# All basemap arguments work in qmap()
+
+dt <- data.frame(lon = c(-80, -80, -50, -50), lat = c(65, 80, 80, 65))
+ 
+\donttest{
 qmap(dt, rotate = TRUE)
 }
 
