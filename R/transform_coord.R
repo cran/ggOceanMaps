@@ -26,6 +26,7 @@
 ## Debug parameters
 # x = NULL; lon = NULL; lat = NULL; new.names = "auto"; proj.in = 4326; proj.out = NULL; verbose = FALSE; bind = FALSE; na = "ignore"
 # x = data; bind = TRUE; new.names = "auto"; na = "ignore"
+
 transform_coord <- function(x = NULL, lon = NULL, lat = NULL, new.names = "auto", proj.in = 4326, proj.out = NULL, verbose = FALSE, bind = FALSE, na = "ignore") {
   
   # Checks ----
@@ -50,7 +51,7 @@ transform_coord <- function(x = NULL, lon = NULL, lat = NULL, new.names = "auto"
     
     error_test <- quiet(try(match.arg(proj.out, shapefile_list("all")$name), silent = TRUE))
     
-    if(class(error_test) != "try-error") {
+    if(!inherits(error_test, "try-error")) {
       proj.out <- sf::st_crs(shapefile_list(proj.out)$crs)
     }
   }
@@ -140,20 +141,20 @@ transform_coord <- function(x = NULL, lon = NULL, lat = NULL, new.names = "auto"
   
   ## Fix the CRS
   
-  if("crs" != class(proj.in)) {
+  if(!inherits(proj.in, "crs")) {
     error_test <- quiet(try(sf::st_crs(proj.in), silent = TRUE))
     
-    if(class(error_test) == "try-error") {
+    if(inherits(error_test, "try-error")) {
       stop("Failed to convert the argument proj.in to sf::st_crs object in the transform_coord function. This is likely a bug. If so, please file a bug report on GitHub.")
     } else {
       proj.in <- error_test
     }
   }
   
-  if("crs" != class(proj.out)) {
+  if(!inherits(proj.out, "crs")) {
     error_test <- quiet(try(sf::st_crs(proj.out), silent = TRUE))
     
-    if(class(error_test) == "try-error") {
+    if(inherits(error_test, "try-error")) {
       stop("Failed to convert the argument proj.out to sf::st_crs object in the transform_coord function. This is likely a bug. If so, please file a bug report on GitHub.")
     } else {
       proj.out <- error_test
@@ -190,7 +191,7 @@ transform_coord <- function(x = NULL, lon = NULL, lat = NULL, new.names = "auto"
   
   if(na == "ignore" & nrow(z) > 0) {
     y <- rbind(y, z)
-    rownames(y) <- y$id
+    suppressWarnings(rownames(y) <- y$id)
     y <- y[order(y$id), !colnames(y) %in% "id"]
   } else {
     y <- y[, !colnames(y) %in% "id"]
@@ -236,7 +237,7 @@ transform_coord <- function(x = NULL, lon = NULL, lat = NULL, new.names = "auto"
   }
   
   if(exists("oldrownames")) {
-    rownames(out) <- oldrownames
+    suppressWarnings(rownames(out) <- oldrownames)
     out <- out
   } else {
     out <- out

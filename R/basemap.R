@@ -25,6 +25,7 @@
 #' @param land.col,gla.col,grid.col Character code specifying the color of land, glaciers and grid lines, respectively. Use \code{NA} to remove the grid lines.
 #' @param land.border.col,gla.border.col,bathy.border.col Character code specifying the color of the border line for land, glacier, and bathymetry shapes.
 #' @param land.size,gla.size,bathy.size,grid.size Numeric value specifying the width of the border line land, glacier and bathymetry shapes as well as the grid lines, respectively. Use the \code{\link{LS}} function for a specific width in pt. See Details.
+#' @param bathy.alpha Transparency parameter for bathymetry fill color. See \link[ggplot2]{scale_alpha}.
 #' @param base_size Base size parameter for ggplot. See \link[ggplot2]{ggtheme}.
 #' @param projection.grid Logical indicating whether the coordinate grid should show projected coordinates instead of decimal degree values. Useful to define limits for large maps in polar regions.
 #' @param expand.factor Expansion factor for map limits with the \code{data} argument. Can be used to zoom in and out automatically limited maps. Defaults to 1.1. Set to \code{NULL} to ignore.
@@ -171,21 +172,21 @@
 #' @export
 
 ## Test parameters
-# limits = NULL; data = NULL; shapefiles = NULL; bathymetry = FALSE; glaciers = FALSE; rotate = FALSE; legends = TRUE; legend.position = "right"; lon.interval = NULL; lat.interval = NULL; bathy.style = "poly_blues"; bathy.border.col = NA; bathy.size = 0.1; land.col = "grey60"; land.border.col = "black"; land.size = 0.1; gla.col = "grey95"; gla.border.col = "black"; gla.size = 0.1; grid.col = "grey70"; grid.size = 0.1; base_size = 11; projection.grid = FALSE; verbose = TRUE
+# x = NULL; limits = NULL; data = NULL; shapefiles = NULL; bathymetry = FALSE; glaciers = FALSE; rotate = FALSE; legends = TRUE; legend.position = "right"; lon.interval = NULL; lat.interval = NULL; bathy.style = "poly_blues"; bathy.border.col = NA; bathy.size = 0.1; land.col = "grey60"; land.border.col = "black"; land.size = 0.1; gla.col = "grey95"; gla.border.col = "black"; gla.size = 0.1; grid.col = "grey70"; grid.size = 0.1; base_size = 11; projection.grid = FALSE; verbose = TRUE
 
-basemap <- function(x = NULL, limits = NULL, data = NULL, shapefiles = NULL, bathymetry = FALSE, glaciers = FALSE, rotate = FALSE, legends = TRUE, legend.position = "right", lon.interval = NULL, lat.interval = NULL, bathy.style = "poly_blues", bathy.border.col = NA, bathy.size = 0.1, land.col = "grey60", land.border.col = "black", land.size = 0.1, gla.col = "grey95", gla.border.col = "black", gla.size = 0.1, grid.col = "grey70", grid.size = 0.1, base_size = 11, projection.grid = FALSE, expand.factor = 1.1, verbose = FALSE) {
+basemap <- function(x = NULL, limits = NULL, data = NULL, shapefiles = NULL, bathymetry = FALSE, glaciers = FALSE, rotate = FALSE, legends = TRUE, legend.position = "right", lon.interval = NULL, lat.interval = NULL, bathy.style = "poly_blues", bathy.border.col = NA, bathy.size = 0.1, bathy.alpha = 1, land.col = "grey60", land.border.col = "black", land.size = 0.1, gla.col = "grey95", gla.border.col = "black", gla.size = 0.1, grid.col = "grey70", grid.size = 0.1, base_size = 11, projection.grid = FALSE, expand.factor = 1.1, verbose = FALSE) {
   
   # Install ggOceanMapsData if not installed
-  if (!requireNamespace("ggOceanMapsData", quietly = TRUE)) {
-    stop('The ggOceanMapsData package needs to be installed for ggOceanMaps to function.\nInstall the data package by running\ninstall.packages("ggOceanMapsData", repos = c("https://mikkovihtakari.github.io/drat", "https://cloud.r-project.org")\nOR\ndevtools::install_github("MikkoVihtakari/ggOceanMapsData")')
-  }
+  # if (!requireNamespace("ggOceanMapsData", quietly = TRUE)) {
+  #   stop('The ggOceanMapsData package needs to be installed for ggOceanMaps to function.\nInstall the data package by running\ninstall.packages("ggOceanMapsData", repos = c("https://mikkovihtakari.github.io/drat", "https://cloud.r-project.org"))\nOR\ndevtools::install_github("MikkoVihtakari/ggOceanMapsData")')
+  # }
   
   # The x argument to limits or data
   
   if(!is.null(x)) {
-    if(any(class(x) %in% c("integer", "numeric")) & is.null(limits)) {
+    if(any(class(x) %in% c("integer", "numeric", "bbox")) & is.null(limits)) {
       limits <- x
-    } else if(any(class(x) %in% c("data.table", "sf", "SpatialPolygonsDataFrame", "SpatialPolygons")) & is.null(limits) & is.null(data)) {
+    } else if(any(class(x) %in% c("data.frame", "data.table", "sf", "sfc", "SpatialPolygonsDataFrame", "SpatialPolygons")) & is.null(limits) & is.null(data)) {
       data <- x
     }
   }
@@ -193,7 +194,7 @@ basemap <- function(x = NULL, limits = NULL, data = NULL, shapefiles = NULL, bat
   # Checks ####
   
   if(is.null(data) & is.null(limits) & is.null(shapefiles)) stop("One or several of the arguments limits, data and shapefiles is required.")
-  if(class(legends) != "logical" | !length(legends) %in% 1:2) stop("'legends' argument has to be a logical vector of length 1 or 2. Read the explantion for the argument in ?basemap")
+  if(!is.logical(legends) | !length(legends) %in% 1:2) stop("'legends' argument has to be a logical vector of length 1 or 2. Read the explantion for the argument in ?basemap")
   
   ###########
   # Data ####
@@ -265,6 +266,7 @@ basemap <- function(x = NULL, limits = NULL, data = NULL, shapefiles = NULL, bat
   attributes(out)$glaciers <- glaciers
   attributes(out)$limits <- X$map.limits
   attributes(out)$polarmap <- X$polar.map
+  attributes(out)$map.grid <- X$map.grid
   attributes(out)$crs <- X$shapefiles$crs
   attributes(out)$proj <- X$proj
   
