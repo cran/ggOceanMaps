@@ -1,6 +1,6 @@
 #' @title Create a ggplot2 basemap for plotting variables
 #' @description Creates a ggplot2 basemap for further plotting of variables.
-#' @param x The limit type (\code{limits} or \code{data}) is automatically recognized from the class of this argument.
+#' @param x The limit type (\code{limits}, \code{data}, or \code{shapefiles}) is automatically recognized from the class of this argument.
 #' @param limits Map limits. One of the following:
 #' \itemize{
 #'   \item \strong{numeric vector} of length 4: The first element defines the start longitude, the second element the end longitude (counter-clockwise), the third element the minimum latitude and the fourth element the maximum latitude of the bounding box. The coordinates can be given as decimal degrees or coordinate units for shapefiles used by a projected map. Produces a rectangular map. Latitude limits not given in min-max order are automatically ordered to respect this requirement.
@@ -84,21 +84,21 @@
 #' # The easiest way to produce a map is to use the limits
 #' # argument and decimal degrees:
 #' 
-#' if(requireNamespace("ggOceanMapsData")) {
+#' \donttest{
+#' if(requireNamespace("ggOceanMapsData", quietly = TRUE)) {
 #' basemap(limits = 60)
-#' }
 #' 
 #' # Bathymetry and glaciers can be added using the respective arguments:
-#' \donttest{
+#' 
 #' basemap(limits = -60, bathymetry = TRUE, glaciers = TRUE)
-#' }
+#' 
 #' # The easiest way to add data on the maps is to use the ggspatial functions:
 #'
 #' dt <- data.frame(lon = c(-150, 150), lat = c(60, 90))
-#' \donttest{
+#' 
 #' basemap(data = dt, bathymetry = TRUE) +
 #' geom_spatial_point(data = dt, aes(x = lon, y = lat), color = "red")
-#' }
+#' 
 #' \dontrun{
 #' # Note that writing out data = dt is required because there are multiple
 #' # underlying ggplot layers plotted already:
@@ -110,12 +110,10 @@
 #' # If you want to use native ggplot commands, you need to transform your data
 #' # to the projection used by the map:
 #' 
-#' if(requireNamespace("ggOceanMapsData")) {
 #' dt <- transform_coord(dt, bind = TRUE)
 #'
 #' basemap(data = dt) + geom_point(data = dt, aes(x = lon.proj, y = lat.proj))
-#' }
-#' \donttest{
+#'
 #' # The limits argument of length 4 plots a map anywhere in the world:
 #' 
 #' basemap(limits = c(100, 160, -20, 30), bathymetry = TRUE)
@@ -168,6 +166,7 @@
 #'       axis.ticks.y = element_blank()
 #'       )
 #' }
+#' }
 #' @import ggplot2 ggspatial sp sf
 #' @export
 
@@ -188,6 +187,8 @@ basemap <- function(x = NULL, limits = NULL, data = NULL, shapefiles = NULL, bat
       limits <- x
     } else if(any(class(x) %in% c("data.frame", "data.table", "sf", "sfc", "SpatialPolygonsDataFrame", "SpatialPolygons")) & is.null(limits) & is.null(data)) {
       data <- x
+    } else if(inherits(x, "character")) {
+      shapefiles <- x
     }
   }
   
