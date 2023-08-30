@@ -88,7 +88,7 @@
 #' \itemize{
 #' \item \strong{Land polygons.} \href{https://www.naturalearthdata.com/downloads/10m-physical-vectors/}{Natural Earth Data} 1:10m Physical Vectors with the Land and Minor Island datasets combined. Distributed under the \href{https://creativecommons.org/publicdomain/}{CC Public Domain license} (\href{https://www.naturalearthdata.com/about/terms-of-use/}{terms of use}).
 #' \item \strong{Glacier polygons.} \href{https://www.naturalearthdata.com/downloads/10m-physical-vectors/}{Natural Earth Data} 1:10m Physical Vectors with the Glaciated Areas and Antarctic Ice Shelves datasets combined. Distributed under the \href{https://creativecommons.org/publicdomain/}{CC Public Domain license} (\href{https://www.naturalearthdata.com/about/terms-of-use/}{terms of use})
-#' \item \strong{Bathymetry.} \href{https://www.ncei.noaa.gov/products/etopo-global-relief-model}{NOAA National Centers for Environmental Information. 2022: ETOPO 2022 15 Arc-Second Global Relief Model. NOAA National Centers for Environmental Information.} \doi{10.25921/fd45-gt74}. Distributed under the \href{https://www.usa.gov/government-works}{U.S. Government Work license}.
+#' \item \strong{Bathymetry.} \href{https://www.ncei.noaa.gov/products/etopo-global-relief-model}{NOAA National Centers for Environmental Information. 2022: ETOPO 2022 15 Arc-Second Global Relief Model. NOAA National Centers for Environmental Information.} \doi{10.25921/fd45-gt74}. Distributed under the \href{https://www.usa.gov/government-works/}{U.S. Government Work license}.
 #' }
 #' 
 #' @family basemap functions
@@ -193,7 +193,7 @@
 ## Test parameters
 
 # limits = c(160, -160, 60, 80); bathymetry = TRUE
-# x = NULL; limits = NULL; data = NULL; shapefiles = NULL; crs = NULL; bathymetry = FALSE; glaciers = FALSE; rotate = FALSE; legends = TRUE; legend.position = "right"; lon.interval = NULL; lat.interval = NULL; bathy.style = NULL; bathy.border.col = NA; bathy.size = 0.1; bathy.alpha = 1; land.col = "grey60"; land.border.col = "black"; land.size = 0.1; gla.col = "grey95"; gla.border.col = "black"; gla.size = 0.1; grid.col = "grey70"; grid.size = 0.1; base_size = 11; projection.grid = FALSE; verbose = TRUE
+# x = NULL; limits = NULL; data = NULL; shapefiles = NULL; crs = NULL; bathymetry = FALSE; glaciers = FALSE; rotate = FALSE; legends = TRUE; legend.position = "right"; lon.interval = NULL; lat.interval = NULL; bathy.style = NULL; downsample = 0; bathy.border.col = NA; bathy.size = 0.1; bathy.alpha = 1; land.col = "grey60"; land.border.col = "black"; land.size = 0.1; gla.col = "grey95"; gla.border.col = "black"; gla.size = 0.1; grid.col = "grey70"; grid.size = 0.1; base_size = 11; projection.grid = FALSE; verbose = TRUE
 
 basemap <- function(x = NULL, limits = NULL, data = NULL, shapefiles = NULL, crs = NULL, bathymetry = FALSE, glaciers = FALSE, rotate = FALSE, legends = TRUE, legend.position = "right", lon.interval = NULL, lat.interval = NULL, bathy.style = NULL, downsample = 0, bathy.border.col = NA, bathy.size = 0.1, bathy.alpha = 1, land.col = "grey60", land.border.col = "black", land.size = 0.1, gla.col = "grey95", gla.border.col = "black", gla.size = 0.1, grid.col = "grey70", grid.size = 0.1, base_size = 11, projection.grid = FALSE, expand.factor = 1.1, verbose = FALSE) {
   
@@ -332,7 +332,7 @@ basemap <- function(x = NULL, limits = NULL, data = NULL, shapefiles = NULL, crs
   attributes(out)$map.grid <- X$map.grid
   attributes(out)$crs <- sf::st_crs(X$proj)
   
-  out
+  suppressWarnings(out)
   
   ## END ####
 }
