@@ -1,8 +1,8 @@
 Package: ggOceanMaps
 Type: Package
 Title: Plot Data on Oceanographic Maps using 'ggplot2'
-Version: 2.1.1
-Date: 2023-08-30
+Version: 2.2.0
+Date: 2024-01-15
 Authors@R: c(person("Mikko", "Vihtakari", email = "mikko.vihtakari@hi.no",
                   role = c("aut", "cre"), 
                   comment = c(affiliation = "Institute of Marine Research", 
@@ -32,11 +32,11 @@ RoxygenNote: 7.2.3
 LazyData: true
 LazyDataCompression: xz
 NeedsCompilation: no
-Packaged: 2023-08-30 08:35:17 UTC; a22357
+Packaged: 2024-01-15 10:56:44 UTC; a22357
 Author: Mikko Vihtakari [aut, cre] (Institute of Marine Research,
     <https://orcid.org/0000-0003-0371-4319>),
   Roger Bivand [ctb],
   Hadley Wickham [ctb]
 Maintainer: Mikko Vihtakari <mikko.vihtakari@hi.no>
 Repository: CRAN
-Date/Publication: 2023-08-30 09:20:02 UTC
+Date/Publication: 2024-01-15 13:10:05 UTC

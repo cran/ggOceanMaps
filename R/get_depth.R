@@ -25,7 +25,7 @@ get_depth <- function(data, bathy.style = "raster_continuous", lon = NULL, lat =
   } else if(grepl("raster_continuous|^rc", bathy.style)) {
     bathy.type <- "raster_continuous"
   } else if(grepl("raster_user|^ru", bathy.style)) {
-    bathy.type <- "raster_continuous"
+    bathy.type <- "raster_user"
   } else {
     bathy_cmd <- define_bathy_style(bathy.style)
     bathy.type <- gsub("_blues$|_grays$", "", names(bathy_cmd))
@@ -39,7 +39,11 @@ get_depth <- function(data, bathy.style = "raster_continuous", lon = NULL, lat =
   
   shapefiles <- load_map_data(shapefiles)
   
-  bathy <- shapefiles$bathy$raster
+  if(is.null(shapefiles$bathy$raster)) {
+    bathy <- shapefiles$bathy
+  } else {
+    bathy <- shapefiles$bathy$raster
+  }
   
   # Data
   
@@ -57,9 +61,26 @@ get_depth <- function(data, bathy.style = "raster_continuous", lon = NULL, lat =
     
     if(bind) {
       names(out)[names(out) == names(bathy)] <- depth.col
-      out
+      out[[depth.col]] <- as.numeric(out[[depth.col]])
+      
+      if(mean(out[[depth.col]], na.rm = TRUE) < 0) {
+        out[[depth.col]] <- -1*out[[depth.col]]
+      } 
+      
+      out[out[[depth.col]] < 0, depth.col] <- NA
+      
+      return(out)
+      
     } else {
-      out[[names(bathy)]]
+      out <- as.numeric(out[[names(bathy)]])
+      
+      if(mean(out, na.rm = TRUE) < 0) {
+        out <- -1*out
+      }
+      
+      out[out < 0] <- NA
+      
+      return(out)
     }
     
   } else {
@@ -98,6 +119,16 @@ get_depth <- function(data, bathy.style = "raster_continuous", lon = NULL, lat =
     
     out <- stars::st_extract(bathy, x)
     out <- out[[names(bathy)]]
+    
+    ## Turn into numbers
+    
+    out <- as.numeric(out)
+    
+    if(mean(out, na.rm = TRUE) < 0) {
+      out <- -1*out
+    }
+    
+    out[out < 0] <- NA
     
     ## Recombine with NAs
     
